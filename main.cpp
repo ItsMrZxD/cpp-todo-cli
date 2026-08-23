@@ -1,4 +1,4 @@
-// todo-cli — a simple command-line to-do list manager.
+// todo-cli - a simple command-line to-do list manager.
 //
 // Single-file C++ program, standard library only.
 // Build (MinGW / g++):  g++ -std=c++11 -Wall -O2 -o todo main.cpp
@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-// A single to-do item.
 struct Task {
     std::string description;
     bool done;
@@ -21,11 +20,6 @@ struct Task {
 
 static const std::string DATA_FILE = "tasks.txt";
 
-// ---------------------------------------------------------------------------
-// Small input helpers
-// ---------------------------------------------------------------------------
-
-// Trim leading/trailing whitespace.
 static std::string trim(const std::string& s) {
     const std::string ws = " \t\r\n";
     std::size_t start = s.find_first_not_of(ws);
@@ -34,8 +28,7 @@ static std::string trim(const std::string& s) {
     return s.substr(start, end - start + 1);
 }
 
-// Read one full line from stdin (whole-line input keeps things simple and
-// avoids the classic cin >> / getline newline pitfalls).
+// Whole-line input avoids the classic cin >> / getline newline pitfalls.
 static std::string readLine() {
     std::string line;
     std::getline(std::cin, line);
@@ -64,23 +57,19 @@ static void waitForEnter() {
     std::getline(std::cin, discard);
 }
 
-// ---------------------------------------------------------------------------
-// Persistence
-// ---------------------------------------------------------------------------
-
-// Load tasks from DATA_FILE. A missing or empty file simply yields an empty
-// list — that's the normal first-run case, not an error.
+// A missing or empty file yields an empty list; that's the normal first-run
+// case, not an error.
 static std::vector<Task> loadTasks() {
     std::vector<Task> tasks;
     std::ifstream in(DATA_FILE.c_str());
-    if (!in) return tasks; // no file yet
+    if (!in) return tasks;
 
     std::string line;
     while (std::getline(in, line)) {
-        if (trim(line).empty()) continue;          // skip blank lines
+        if (trim(line).empty()) continue;
 
         std::size_t sep = line.find('|');
-        if (sep == std::string::npos) continue;    // skip malformed lines
+        if (sep == std::string::npos) continue;
 
         std::string flag = line.substr(0, sep);
         std::string desc = line.substr(sep + 1);   // keeps any '|' in the text
@@ -94,7 +83,6 @@ static std::vector<Task> loadTasks() {
     return tasks;
 }
 
-// Save all tasks back to DATA_FILE, overwriting it.
 static bool saveTasks(const std::vector<Task>& tasks) {
     std::ofstream out(DATA_FILE.c_str(), std::ios::trunc);
     if (!out) return false;
@@ -103,10 +91,6 @@ static bool saveTasks(const std::vector<Task>& tasks) {
     }
     return true;
 }
-
-// ---------------------------------------------------------------------------
-// UI
-// ---------------------------------------------------------------------------
 
 static void printBanner() {
     std::cout << "\n";
@@ -127,7 +111,6 @@ static void printMenu() {
     std::cout << "  Choose an option (1-5): ";
 }
 
-// Print the numbered task list with [ ] / [x] markers and a small summary.
 static void listTasks(const std::vector<Task>& tasks) {
     std::cout << "\n";
     if (tasks.empty()) {
@@ -150,10 +133,6 @@ static void listTasks(const std::vector<Task>& tasks) {
               << "  |  Pending: " << (tasks.size() - doneCount) << "\n";
 }
 
-// ---------------------------------------------------------------------------
-// Actions
-// ---------------------------------------------------------------------------
-
 static void addTask(std::vector<Task>& tasks) {
     std::cout << "\n  Enter task description: ";
     std::string desc = trim(readLine());
@@ -168,9 +147,8 @@ static void addTask(std::vector<Task>& tasks) {
     std::cout << "  + Added: \"" << desc << "\"\n";
 }
 
-// Shared helper for the "mark complete" and "delete" flows: show the list and
-// ask the user to pick a task number (0 cancels). Returns a 0-based index, or
-// -1 if the user cancelled / entered something invalid.
+// Returns a 0-based index, or -1 if the user cancelled (0) or picked an
+// invalid number.
 static int pickTask(const std::vector<Task>& tasks, const std::string& verb) {
     if (tasks.empty()) {
         std::cout << "\n  There are no tasks to " << verb << " yet.\n";
@@ -213,10 +191,6 @@ static void deleteTask(std::vector<Task>& tasks) {
     tasks.erase(tasks.begin() + i);
     std::cout << "  - Deleted: \"" << removed << "\"\n";
 }
-
-// ---------------------------------------------------------------------------
-// Main loop
-// ---------------------------------------------------------------------------
 
 int main() {
     std::vector<Task> tasks = loadTasks();

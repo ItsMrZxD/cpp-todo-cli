@@ -4,17 +4,11 @@
 
 A small, dependency-free command-line to-do list manager written in C++.
 
-It runs entirely in the terminal with a simple numbered menu, and remembers your
-tasks between runs by saving them to a plain-text file.
-
-## Features
-
-- Menu-driven loop: **add**, **list**, **mark complete**, **delete**, and **quit**
-- Tasks stored in memory as a list of `{ description, done }` items
-- Automatic persistence — loads from `tasks.txt` on startup, saves on quit
-- Clear numbered list with `[ ]` / `[x]` markers and a done/pending summary
-- Robust input handling (bad input never crashes the program)
-- Handles a missing or empty `tasks.txt` gracefully on first run
+It runs entirely in the terminal with a numbered menu — add, list, mark
+complete, delete, quit — and remembers your tasks between runs by saving
+them to `tasks.txt`. Tasks show as `[ ]` / `[x]` with a done/pending summary.
+Bad input is rejected rather than crashing, and a missing or empty
+`tasks.txt` is just an empty list on first run.
 
 ## Requirements
 
@@ -88,23 +82,8 @@ g++ -std=c++11 -Wall -Wextra -O2 -o run_tests tests/test_main.cpp
 ./run_tests
 ```
 
-The unit tests cover the input-parsing helpers and the save/load round trip
-(including descriptions containing `|` and malformed lines in the data file).
-On every push, CI builds the app on Linux and Windows, runs the unit tests,
-and drives a scripted add/list/quit session against the real binary.
-
-## Project structure
-
-```
-todo-cli/
-├── main.cpp                    # the entire program
-├── tests/
-│   └── test_main.cpp           # unit tests (#include the program directly)
-├── .github/workflows/ci.yml    # build + tests on Linux and Windows
-├── README.md
-├── LICENSE
-└── .gitignore
-```
+The unit tests cover the input-parsing helpers and the save/load round trip,
+including descriptions containing `|` and malformed lines in the data file.
 
 ## License
 
